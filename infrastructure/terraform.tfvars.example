@@ -1,0 +1,38 @@
+# Banking Service - Local Docker Deployment
+# Terraform Variables Example
+# Copy this file to terraform.tfvars and modify with your values
+
+# Deployment Environment
+environment = "development"
+
+# Application Configuration
+app_name = "banking-service"
+
+# Docker Host Configuration
+# For macOS/Linux: "unix:///var/run/docker.sock"
+# For Windows: "npipe:////.//pipe//docker_engine"
+docker_host = "unix:///var/run/docker.sock"
+
+# Application Port (local access)
+app_port = 8000
+
+# Container Internal Port (must match EXPOSE in Dockerfile)
+container_port = 8000
+
+# Database Configuration
+db_port         = 5432
+db_user         = "postgres"
+db_password     = "postgres_local_dev_password"  # Change this in production!
+db_name         = "banking_db"
+database_version = "15"
+
+# Monitoring
+enable_monitoring = true
+
+# Custom Tags
+tags = {
+  Project     = "Banking Service"
+  Environment = "Development"
+  CreatedBy   = "Terraform"
+  Type        = "LocalDocker"
+}
