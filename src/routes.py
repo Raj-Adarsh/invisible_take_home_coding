@@ -5,7 +5,7 @@ from decimal import Decimal
 from typing import List
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Header, status
 from sqlalchemy.orm import Session
 
 from src.db import get_db
@@ -38,7 +38,7 @@ router = APIRouter()
 
 
 # Dependency to get current user from token
-def get_current_user_id(authorization: str = "") -> UUID:
+def get_current_user_id(authorization: str = Header(default="")) -> UUID:
     """Extract and validate user ID from Authorization header."""
     if not authorization.startswith("Bearer "):
         raise HTTPException(
@@ -95,7 +95,7 @@ def login(credentials: LoginRequest, db: Session = Depends(get_db)) -> dict:
 
 @router.get("/auth/me", response_model=UserResponse)
 def get_current_user(
-    authorization: str = "",
+    authorization: str = Header(default=""),
     db: Session = Depends(get_db),
 ) -> dict:
     """Get current user profile."""
@@ -113,7 +113,7 @@ def get_current_user(
 @router.post("/accounts", response_model=AccountResponse, status_code=status.HTTP_201_CREATED)
 def create_account(
     account_data: AccountCreate,
-    authorization: str = "",
+    authorization: str = Header(default=""),
     db: Session = Depends(get_db),
 ) -> dict:
     """Create a new account for the current user."""
@@ -134,7 +134,7 @@ def create_account(
 
 
 @router.get("/accounts", response_model=List[AccountResponse])
-def list_accounts(authorization: str = "", db: Session = Depends(get_db)) -> List[dict]:
+def list_accounts(authorization: str = Header(default=""), db: Session = Depends(get_db)) -> List[dict]:
     """List all accounts for the current user."""
     user_id = get_current_user_id(authorization)
     service = AccountService(db)
@@ -144,7 +144,7 @@ def list_accounts(authorization: str = "", db: Session = Depends(get_db)) -> Lis
 @router.get("/accounts/{account_id}", response_model=AccountResponse)
 def get_account(
     account_id: UUID,
-    authorization: str = "",
+    authorization: str = Header(default=""),
     db: Session = Depends(get_db),
 ) -> dict:
     """Get account details."""
@@ -170,7 +170,7 @@ def get_account(
 def deposit(
     account_id: UUID,
     transaction_data: TransactionCreate,
-    authorization: str = "",
+    authorization: str = Header(default=""),
     db: Session = Depends(get_db),
 ) -> dict:
     """Deposit money into an account."""
@@ -203,7 +203,7 @@ def deposit(
 def withdrawal(
     account_id: UUID,
     transaction_data: TransactionCreate,
-    authorization: str = "",
+    authorization: str = Header(default=""),
     db: Session = Depends(get_db),
 ) -> dict:
     """Withdraw money from an account."""
@@ -233,7 +233,7 @@ def get_transactions(
     account_id: UUID,
     skip: int = 0,
     limit: int = 50,
-    authorization: str = "",
+    authorization: str = Header(default=""),
     db: Session = Depends(get_db),
 ) -> List[dict]:
     """Get transactions for an account."""
@@ -256,7 +256,7 @@ def get_transactions(
 )
 def transfer_money(
     transfer_data: TransferRequest,
-    authorization: str = "",
+    authorization: str = Header(default=""),
     db: Session = Depends(get_db),
 ) -> dict:
     """Transfer money between accounts."""
@@ -287,7 +287,7 @@ def get_outgoing_transfers(
     account_id: UUID,
     skip: int = 0,
     limit: int = 50,
-    authorization: str = "",
+    authorization: str = Header(default=""),
     db: Session = Depends(get_db),
 ) -> List[dict]:
     """Get outgoing transfers for an account."""
@@ -307,7 +307,7 @@ def get_incoming_transfers(
     account_id: UUID,
     skip: int = 0,
     limit: int = 50,
-    authorization: str = "",
+    authorization: str = Header(default=""),
     db: Session = Depends(get_db),
 ) -> List[dict]:
     """Get incoming transfers for an account."""
@@ -330,7 +330,7 @@ def get_incoming_transfers(
 )
 def create_card(
     card_data: CardCreate,
-    authorization: str = "",
+    authorization: str = Header(default=""),
     db: Session = Depends(get_db),
 ) -> dict:
     """Create a new card."""
@@ -351,7 +351,7 @@ def create_card(
 
 
 @router.get("/cards", response_model=List[CardResponse])
-def list_cards(authorization: str = "", db: Session = Depends(get_db)) -> List[dict]:
+def list_cards(authorization: str = Header(default=""), db: Session = Depends(get_db)) -> List[dict]:
     """List all cards for the current user."""
     user_id = get_current_user_id(authorization)
     service = CardService(db)
@@ -361,7 +361,7 @@ def list_cards(authorization: str = "", db: Session = Depends(get_db)) -> List[d
 @router.post("/cards/{card_id}/block", status_code=status.HTTP_200_OK)
 def block_card(
     card_id: UUID,
-    authorization: str = "",
+    authorization: str = Header(default=""),
     db: Session = Depends(get_db),
 ) -> dict:
     """Block a card."""
@@ -391,7 +391,7 @@ def block_card(
 def generate_statement(
     account_id: UUID,
     statement_request: StatementRequest,
-    authorization: str = "",
+    authorization: str = Header(default=""),
     db: Session = Depends(get_db),
 ) -> dict:
     """Generate a statement for an account."""
@@ -421,7 +421,7 @@ def get_statements(
     account_id: UUID,
     skip: int = 0,
     limit: int = 50,
-    authorization: str = "",
+    authorization: str = Header(default=""),
     db: Session = Depends(get_db),
 ) -> List[dict]:
     """Get statements for an account."""
