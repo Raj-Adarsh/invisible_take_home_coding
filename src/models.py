@@ -144,6 +144,20 @@ class TransactionCreate(BaseModel):
         return v.quantize(Decimal("0.01"))
 
 
+class SimpleTransactionRequest(BaseModel):
+    """Simple transaction request for deposit/withdrawal."""
+
+    amount: Decimal = Field(..., gt=0)
+    description: Optional[str] = None
+
+    @validator("amount")
+    def validate_amount(cls, v: Decimal) -> Decimal:
+        """Validate transaction amount."""
+        if v <= 0:
+            raise ValueError("Amount must be greater than 0")
+        return v.quantize(Decimal("0.01"))
+
+
 class TransactionResponse(BaseResponse):
     """Transaction response model."""
 
@@ -193,7 +207,6 @@ class CardResponse(BaseResponse):
 class StatementRequest(BaseModel):
     """Statement request."""
 
-    account_id: UUID
     start_date: datetime
     end_date: datetime
 

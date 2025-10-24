@@ -1,7 +1,7 @@
 """Unit tests for service layer."""
 
 from decimal import Decimal
-from uuid import uuid4
+from uuid import uuid4, UUID
 
 import pytest
 
@@ -106,7 +106,7 @@ class TestAccountService:
         # Create account
         acc_service = AccountService(db_session)
         account = acc_service.create_account(
-            holder_id=uuid4.UUID(hex=user["id"].hex),
+            holder_id=UUID(hex=user["id"].hex),
             account_type="Savings",
             initial_balance=Decimal("1000.00"),
         )
@@ -140,7 +140,7 @@ class TestAccountService:
         service = AccountService(db_session)
         with pytest.raises(ValueError, match="cannot be negative"):
             service.create_account(
-                holder_id=uuid4.UUID(hex=user["id"].hex),
+                holder_id=UUID(hex=user["id"].hex),
                 account_type="Savings",
                 initial_balance=Decimal("-100.00"),
             )
@@ -163,7 +163,7 @@ class TestTransactionService:
 
         acc_service = AccountService(db_session)
         account = acc_service.create_account(
-            holder_id=uuid4.UUID(hex=user["id"].hex),
+            holder_id=UUID(hex=user["id"].hex),
             account_type="Savings",
             initial_balance=Decimal("0.00"),
         )
@@ -172,7 +172,7 @@ class TestTransactionService:
         # Test
         txn_service = TransactionService(db_session)
         transaction = txn_service.deposit(
-            account_id=uuid4.UUID(hex=account["id"].hex),
+            account_id=UUID(hex=account["id"].hex),
             amount=Decimal("100.00"),
         )
         db_session.commit()
@@ -195,7 +195,7 @@ class TestTransactionService:
 
         acc_service = AccountService(db_session)
         account = acc_service.create_account(
-            holder_id=uuid4.UUID(hex=user["id"].hex),
+            holder_id=UUID(hex=user["id"].hex),
             account_type="Savings",
             initial_balance=Decimal("500.00"),
         )
@@ -204,7 +204,7 @@ class TestTransactionService:
         # Test
         txn_service = TransactionService(db_session)
         transaction = txn_service.withdrawal(
-            account_id=uuid4.UUID(hex=account["id"].hex),
+            account_id=UUID(hex=account["id"].hex),
             amount=Decimal("100.00"),
         )
         db_session.commit()
@@ -227,7 +227,7 @@ class TestTransactionService:
 
         acc_service = AccountService(db_session)
         account = acc_service.create_account(
-            holder_id=uuid4.UUID(hex=user["id"].hex),
+            holder_id=UUID(hex=user["id"].hex),
             account_type="Savings",
             initial_balance=Decimal("50.00"),
         )
@@ -237,7 +237,7 @@ class TestTransactionService:
         txn_service = TransactionService(db_session)
         with pytest.raises(ValueError, match="Insufficient funds"):
             txn_service.withdrawal(
-                account_id=uuid4.UUID(hex=account["id"].hex),
+                account_id=UUID(hex=account["id"].hex),
                 amount=Decimal("100.00"),
             )
 
@@ -265,12 +265,12 @@ class TestTransferService:
 
         acc_service = AccountService(db_session)
         account1 = acc_service.create_account(
-            holder_id=uuid4.UUID(hex=user1["id"].hex),
+            holder_id=UUID(hex=user1["id"].hex),
             account_type="Savings",
             initial_balance=Decimal("1000.00"),
         )
         account2 = acc_service.create_account(
-            holder_id=uuid4.UUID(hex=user2["id"].hex),
+            holder_id=UUID(hex=user2["id"].hex),
             account_type="Savings",
             initial_balance=Decimal("0.00"),
         )
@@ -279,8 +279,8 @@ class TestTransferService:
         # Test
         transfer_service = TransferService(db_session)
         transfer = transfer_service.transfer_money(
-            from_account_id=uuid4.UUID(hex=account1["id"].hex),
-            to_account_id=uuid4.UUID(hex=account2["id"].hex),
+            from_account_id=UUID(hex=account1["id"].hex),
+            to_account_id=UUID(hex=account2["id"].hex),
             amount=Decimal("500.00"),
         )
         db_session.commit()
@@ -302,7 +302,7 @@ class TestTransferService:
 
         acc_service = AccountService(db_session)
         account = acc_service.create_account(
-            holder_id=uuid4.UUID(hex=user["id"].hex),
+            holder_id=UUID(hex=user["id"].hex),
             account_type="Savings",
             initial_balance=Decimal("1000.00"),
         )
@@ -312,8 +312,8 @@ class TestTransferService:
         transfer_service = TransferService(db_session)
         with pytest.raises(ValueError, match="same account"):
             transfer_service.transfer_money(
-                from_account_id=uuid4.UUID(hex=account["id"].hex),
-                to_account_id=uuid4.UUID(hex=account["id"].hex),
+                from_account_id=UUID(hex=account["id"].hex),
+                to_account_id=UUID(hex=account["id"].hex),
                 amount=Decimal("500.00"),
             )
 
@@ -335,7 +335,7 @@ class TestCardService:
 
         acc_service = AccountService(db_session)
         account = acc_service.create_account(
-            holder_id=uuid4.UUID(hex=user["id"].hex),
+            holder_id=UUID(hex=user["id"].hex),
             account_type="Savings",
             initial_balance=Decimal("1000.00"),
         )
@@ -344,8 +344,8 @@ class TestCardService:
         # Test
         card_service = CardService(db_session)
         card = card_service.create_card(
-            holder_id=uuid4.UUID(hex=user["id"].hex),
-            account_id=uuid4.UUID(hex=account["id"].hex),
+            holder_id=UUID(hex=user["id"].hex),
+            account_id=UUID(hex=account["id"].hex),
             card_type="debit",
         )
         db_session.commit()
@@ -367,7 +367,7 @@ class TestCardService:
 
         acc_service = AccountService(db_session)
         account = acc_service.create_account(
-            holder_id=uuid4.UUID(hex=user["id"].hex),
+            holder_id=UUID(hex=user["id"].hex),
             account_type="Savings",
             initial_balance=Decimal("1000.00"),
         )
@@ -375,14 +375,14 @@ class TestCardService:
 
         card_service = CardService(db_session)
         card = card_service.create_card(
-            holder_id=uuid4.UUID(hex=user["id"].hex),
-            account_id=uuid4.UUID(hex=account["id"].hex),
+            holder_id=UUID(hex=user["id"].hex),
+            account_id=UUID(hex=account["id"].hex),
             card_type="debit",
         )
         db_session.commit()
 
         # Test
-        blocked_card = card_service.block_card(uuid4.UUID(hex=card["id"].hex))
+        blocked_card = card_service.block_card(UUID(hex=card["id"].hex))
         db_session.commit()
 
         assert blocked_card["status"] == "blocked"

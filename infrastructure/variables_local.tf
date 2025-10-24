@@ -51,6 +51,12 @@ variable "db_user" {
   sensitive   = false
 }
 
+variable "db_password" {
+    description = "Database administrator password"
+    type        = string
+    sensitive   = true
+}
+
 variable "db_name" {
   description = "Database name"
   type        = string
@@ -70,4 +76,16 @@ variable "tags" {
     Project = "Banking Service"
     Type    = "Local Development"
   }
+}
+
+variable "app_port" {
+    description = "Port to access the Banking Service API on host"
+    type        = number
+    default     = 8000
+}
+
+variable "app_name" {
+    description = "Application name (will be used as resource prefix)"
+    type        = string
+    default     = "banking-service" 
 }

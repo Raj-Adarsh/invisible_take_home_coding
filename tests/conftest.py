@@ -43,36 +43,39 @@ def get_test_settings() -> TestSettings:
     return test_settings
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def test_engine():
-    """Create a test database engine."""
+    """Create a test database engine for each test."""
     engine = create_engine(
         "sqlite:///:memory:",
         connect_args={"check_same_thread": False},
         poolclass=StaticPool,
     )
     Base.metadata.create_all(bind=engine)
-    return engine
+    yield engine
+    Base.metadata.drop_all(bind=engine)
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def test_session_maker(test_engine):
-    """Create a test session factory."""
+    """Create a test session factory for each test."""
     return sessionmaker(autocommit=False, autoflush=False, bind=test_engine)
 
 
-@pytest.fixture
+@pytest.fixture(scope="function")
 def db_session(test_session_maker):
-    """Get a test database session."""
+    """Get a test database session - fresh for each test."""
     session = test_session_maker()
     try:
         yield session
     finally:
+        # Clear all tables
+        session.query = lambda x: None  # Prevent accidental queries
         session.rollback()
         session.close()
 
 
-@pytest.fixture
+@pytest.fixture(scope="function")
 def override_get_db(db_session):
     """Override the get_db dependency."""
     def _get_db():
@@ -91,6 +94,32 @@ def override_settings():
     config_module.get_settings = get_test_settings
     yield
     config_module.get_settings = original_get_settings
+
+
+@pytest.fixture(autouse=True)
+def clear_db_before_test(db_session):
+    """Clear database before each test to ensure isolation."""
+    # Delete all data from tables in reverse order of foreign keys
+    from src.database import Statement, Transfer, Card, Transaction, Account, User
+    
+    db_session.query(Statement).delete()
+    db_session.query(Transfer).delete()
+    db_session.query(Card).delete()
+    db_session.query(Transaction).delete()
+    db_session.query(Account).delete()
+    db_session.query(User).delete()
+    db_session.commit()
+    
+    yield
+    
+    # Clean up after test
+    db_session.query(Statement).delete()
+    db_session.query(Transfer).delete()
+    db_session.query(Card).delete()
+    db_session.query(Transaction).delete()
+    db_session.query(Account).delete()
+    db_session.query(User).delete()
+    db_session.commit()
 
 
 @pytest.fixture

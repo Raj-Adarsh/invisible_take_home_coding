@@ -8,7 +8,6 @@ The banking service is deployed on Azure using the following components:
 
 - **Compute**: Azure Container Apps for serverless container deployment
 - **Database**: Azure Database for PostgreSQL (Flexible Server) with encryption and SSL/TLS
-- **Storage**: Azure Storage Account for backups and logs
 - **Security**: Azure Key Vault for secrets management
 - **Networking**: Azure Virtual Network with service endpoints
 - **Monitoring**: Application Insights for logging and monitoring

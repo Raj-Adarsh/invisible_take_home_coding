@@ -17,6 +17,7 @@ from src.models import (
     AccountCreate,
     AccountResponse,
     TransactionCreate,
+    SimpleTransactionRequest,
     TransactionResponse,
     TransferRequest,
     CardCreate,
@@ -169,7 +170,7 @@ def get_account(
 )
 def deposit(
     account_id: UUID,
-    transaction_data: TransactionCreate,
+    transaction_data: SimpleTransactionRequest,
     authorization: str = Header(default=""),
     db: Session = Depends(get_db),
 ) -> dict:
@@ -202,7 +203,7 @@ def deposit(
 )
 def withdrawal(
     account_id: UUID,
-    transaction_data: TransactionCreate,
+    transaction_data: SimpleTransactionRequest,
     authorization: str = Header(default=""),
     db: Session = Depends(get_db),
 ) -> dict:

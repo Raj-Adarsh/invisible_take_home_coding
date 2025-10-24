@@ -174,7 +174,7 @@ class BankingServiceTestClient:
         response = self.session.post(self.get_url("/accounts"), json=payload)
         data = self.print_response(response)
         
-        if response.status_code == 200 and data:
+        if response.status_code in [200, 201] and data:
             self.account_id = data.get("id")
             account_number = data.get("account_number")
             self.print_success(f"Account created: {account_number} (ID: {self.account_id})")
@@ -205,7 +205,7 @@ class BankingServiceTestClient:
         
         account_id = account_id or self.account_id
         self.print_request("GET", f"/accounts/{account_id}")
-        response = self.session.get(self.get_url("/accounts/{account_id}"))
+        response = self.session.get(self.get_url(f"/accounts/{account_id}"))
         data = self.print_response(response)
         
         if response.status_code == 200 and data:
@@ -222,16 +222,15 @@ class BankingServiceTestClient:
         
         account_id = account_id or self.account_id
         payload = {
-            "account_id": account_id,
             "amount": amount,
             "description": "Test deposit"
         }
         
-        self.print_request("POST", "/transactions/deposit", payload)
-        response = self.session.post(self.get_url(f"/accounts/{self.account_id}/transactions/deposit"), json=payload)
+        self.print_request("POST", f"/accounts/{account_id}/transactions/deposit", payload)
+        response = self.session.post(self.get_url(f"/accounts/{account_id}/transactions/deposit"), json=payload)
         data = self.print_response(response)
         
-        if response.status_code == 200 and data:
+        if response.status_code in [200, 201] and data:
             self.print_success(f"Deposit successful: ${amount}")
             return True
         else:
@@ -244,16 +243,15 @@ class BankingServiceTestClient:
         
         account_id = account_id or self.account_id
         payload = {
-            "account_id": account_id,
             "amount": amount,
             "description": "Test withdrawal"
         }
         
-        self.print_request("POST", "/transactions/withdrawal", payload)
-        response = self.session.post(self.get_url(f"/accounts/{self.account_id}/transactions/withdrawal"), json=payload)
+        self.print_request("POST", f"/accounts/{account_id}/transactions/withdrawal", payload)
+        response = self.session.post(self.get_url(f"/accounts/{account_id}/transactions/withdrawal"), json=payload)
         data = self.print_response(response)
         
-        if response.status_code == 200 and data:
+        if response.status_code in [200, 201] and data:
             self.print_success(f"Withdrawal successful: ${amount}")
             return True
         else:
@@ -266,7 +264,7 @@ class BankingServiceTestClient:
         
         account_id = account_id or self.account_id
         self.print_request("GET", f"/accounts/{account_id}/transactions")
-        response = self.session.get(self.get_url("/accounts/{account_id}/transactions"))
+        response = self.session.get(self.get_url(f"/accounts/{account_id}/transactions"))
         data = self.print_response(response)
         
         if response.status_code == 200 and data:
@@ -291,7 +289,7 @@ class BankingServiceTestClient:
         response = self.session.post(self.get_url("/cards"), json=payload)
         data = self.print_response(response)
         
-        if response.status_code == 200 and data:
+        if response.status_code in [200, 201] and data:
             card_number = data.get("card_number", "****")
             self.print_success(f"Card created: {card_number[-4:]}")
             return True
@@ -321,16 +319,15 @@ class BankingServiceTestClient:
         
         account_id = account_id or self.account_id
         payload = {
-            "account_id": account_id,
             "start_date": "2024-01-01",
             "end_date": datetime.now().strftime("%Y-%m-%d")
         }
         
-        self.print_request("POST", "/statements", payload)
-        response = self.session.post(self.get_url(f"/accounts/{self.account_id}/statements"), json=payload)
+        self.print_request("POST", f"/accounts/{account_id}/statements", payload)
+        response = self.session.post(self.get_url(f"/accounts/{account_id}/statements"), json=payload)
         data = self.print_response(response)
         
-        if response.status_code == 200 and data:
+        if response.status_code in [200, 201] and data:
             self.print_success("Statement generated successfully")
             return True
         else:
